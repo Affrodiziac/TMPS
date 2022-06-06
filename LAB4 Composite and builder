@@ -1,0 +1,234 @@
+//Interfața Dish
+/** "Component" */
+public interface Dish {
+    Dish getDish(int index);
+    int getDishPrice();
+    void orderDish();
+}
+
+//Clasa ComposedOrder
+/** "Composite" */
+public class ComposedOrder implements Dish {
+    //Collection of child graphics.
+    private final List<Dish> children = new ArrayList<>();
+    private int composedOrderPrice = 0;
+
+    //Adds the dish to the composition.
+    public void addDish(Dish dish) {
+        children.add(dish);
+    }
+
+    @Override
+    public Dish getDish(int index) {
+        return children.get(index);
+    }
+
+    @Override
+    public int getDishPrice() {
+        int price;
+        for (Dish dish : children) {
+            composedOrderPrice += dish.getDishPrice();
+        }
+        price = composedOrderPrice;
+        composedOrderPrice = 0;
+        return price;
+    }
+
+    public void removeDish(int index){
+        children.remove(index);
+    }
+
+    public void orderDish() {
+        for (Dish dish : children) {
+            dish.orderDish();
+        }
+    }
+}
+
+//Clasa PorkTwist:
+/** "Leaf" & "Product" */
+public class PorkTwist implements Dish {
+    private final String dishName;
+    private final int dishPrice;
+
+    public PorkTwist(String name, int price){
+        this.dishName = name;
+        this.dishPrice = price;
+    }
+
+    @Override
+    public Dish getDish(int index) {
+        return this;
+    }
+
+    @Override
+    public int getDishPrice() {
+        return dishPrice;
+    }
+
+    @Override
+    public void orderDish() {
+        System.out.println(dishName + ", " + dishPrice + " Lei");
+    }
+}
+
+//Clasa PorkTwistBuilder:
+/** "ConcreteBuilder" */
+public class PorkTwistBuilder implements Order{
+    private String dishName;
+    private int dishPrice;
+
+    @Override
+    public void setDishName(String dishName) {
+        this.dishName = dishName;
+    }
+
+    @Override
+    public void setDishPrice(int disPrice) {
+        this.dishPrice = disPrice;
+    }
+
+    public PorkTwist build(){
+        return new PorkTwist(dishName, dishPrice);
+    }
+}
+
+//Clasa Burger: 
+/** "Leaf" & "Product" */
+public class Burger implements Dish {
+    private final String dishName;
+    private final int dishPrice;
+
+    public Burger(String name, int price){
+        this.dishName = name;
+        this.dishPrice = price;
+    }
+
+    @Override
+    public Dish getDish(int index) {
+        return this;
+    }
+
+    @Override
+    public int getDishPrice() {
+        return dishPrice;
+    }
+
+    @Override
+    public void orderDish() {
+        System.out.println(dishName + ", " + dishPrice + " Lei");
+    }
+}
+
+//Clasa BurgerBuilder
+/** "ConcreteBuilder" */
+public class BurgerBuilder implements Order{
+    private String dishName;
+    private int dishPrice;
+
+    @Override
+    public void setDishName(String dishName) {
+        this.dishName = dishName;
+    }
+
+    @Override
+    public void setDishPrice(int disPrice) {
+        this.dishPrice = disPrice;
+    }
+
+    public Burger build(){
+        return new Burger(dishName, dishPrice);
+    }
+}
+
+//Clasa Cola:
+/** "Leaf" & "Product" */
+public class Cola implements Dish {
+    private final String dishName;
+    private final int dishPrice;
+
+    public Cola(String name, int price){
+        this.dishName = name;
+        this.dishPrice = price;
+    }
+
+    @Override
+    public Dish getDish(int index) {
+        return this;
+    }
+
+    @Override
+    public int getDishPrice() {
+        return this.dishPrice;
+    }
+
+    @Override
+    public void orderDish() {
+        System.out.println(dishName + ", " + dishPrice + " Lei");
+    }
+
+}
+
+//Clasa ColaBuilder:
+/** "ConcreteBuilder" */
+public class ColaBuilder implements Order {
+    private String dishName;
+    private int dishPrice;
+
+    @Override
+    public void setDishName(String dishName) {
+        this.dishName = dishName;
+    }
+
+    @Override
+    public void setDishPrice(int disPrice) {
+        this.dishPrice = disPrice;
+    }
+
+    public Cola build(){
+        return new Cola(dishName, dishPrice);
+    }
+}
+
+//Interfața Order:
+/** "Builder" */
+public interface Order {
+    void setDishName(String dishName);
+    void setDishPrice(int disPrice);
+}
+
+//Clasa Client:
+public class Client {
+
+    public static void main(String[] args) {
+        ColaBuilder colaBuilder = new ColaBuilder();
+        colaBuilder.setDishName("Cola zero");
+        colaBuilder.setDishPrice(15);
+        Cola cola = colaBuilder.build();
+
+        PorkTwistBuilder porkTwistBuilder = new PorkTwistBuilder();
+        porkTwistBuilder.setDishName("Pork Twist");
+        porkTwistBuilder.setDishPrice(52);
+        PorkTwist porkTwist = porkTwistBuilder.build();
+
+        BurgerBuilder burgerBuilder = new BurgerBuilder();
+        burgerBuilder.setDishName("Black Burger");
+        burgerBuilder.setDishPrice(44);
+        Burger burger = burgerBuilder.build();
+
+        //Clientul face o singura comanda, alcatuita din mai multe produse
+        ComposedOrder clientOrder = new ComposedOrder();
+        clientOrder.addDish(cola);
+        clientOrder.addDish(porkTwist);
+        clientOrder.addDish(burger);
+        //Se comanda produsele alese.
+        System.out.println("S-au comandat urmatoarele produse:");
+        clientOrder.orderDish();
+        System.out.println("Pretul total al comenzii este de " + clientOrder.getDishPrice() + " Lei");
+
+        /*//Fie ca clientul doreste să comande doar un singur produs, spre exemplu un Burger.
+        System.out.println("S-a comandat următorul produs:");
+        burger.orderDish();*/
+
+    }
+}
