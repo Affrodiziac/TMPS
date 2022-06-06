@@ -1,0 +1,74 @@
+package com.company;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) throws IOException, ParseException {
+
+       SingletonBooking reservation1 = SingletonBooking.getInstance();
+        SingletonBooking reservation2 = SingletonBooking.getInstance();
+
+        BookingTable(reservation1);
+        System.out.println("\nDoriți să mai faceți o rezervare? (da / nu)");
+        Scanner scanner = new Scanner(System.in);
+        String raspuns = scanner.nextLine();
+        }
+
+    }
+
+    private static void BookingTable(SingletonBooking reservation) throws ParseException {
+        Table reservedTable = new Table();
+        Scanner scanner;
+        int tableNr;
+
+        System.out.println("Lista de mese a restaurantului este indicată mai jos");
+        for(int i=0; i<10; i++){
+            reservedTable = reservation.tables.get(i);
+            if(reservedTable.status.equals("disponibilă")){
+                System.out.println("Masa nr. " + (i+1) + " - disponibilă");
+            }else{
+                System.out.println("Masa nr. " + (i+1) + " - rezervată pentru ora " + reservedTable.reservedTime);
+            }
+        }
+
+        System.out.println("\nPentru a rezerva o masă din lista indicată mai sus," +
+                " alegeți o masă disponibilă. (Indicati nr.)");
+        scanner = new Scanner(System. in);
+        tableNr = scanner. nextInt();
+        reservedTable.Nr = tableNr;
+
+        
+        if(reservedTable.status.equals("rezervată")){
+            System.out.println("Ne pare rău! Masa cu numărul " + tableNr + " este deja rezervată.\n");
+            System.out.println("Doriți să rezervați altă masă? (da / nu)");
+            scanner = new Scanner(System. in);
+            String raspuns = scanner.nextLine();
+            if(raspuns.equals("da")){
+                System.out.println("\nPentru a rezerva o masă din lista indicată mai sus," +
+                        " alegeți o masă disponibilă. (Indicati nr.)");
+                scanner = new Scanner(System. in);
+                tableNr = scanner. nextInt();
+                reservedTable.Nr = tableNr;
+                SpecifyTime(reservedTable);
+            }
+        }else{
+            SpecifyTime(reservedTable);
+
+        }
+    }
+
+    public static void SpecifyTime(Table reservedTable){
+        Scanner scanner;
+
+        System.out.println("Specificați ora la care doriți rezervarea mesei!(HH:mm)");
+        scanner = new Scanner(System. in);
+        reservedTable.reservedTime = scanner. nextLine();
+
+        reservedTable.status = "rezervată";
+        System.out.println("Masa dumnevoastră a fost rezervată la ora "
+                + reservedTable.reservedTime + "! Vă așteptăm cu drag.\n");
+
+        SingletonBooking.tables.set(reservedTable.Nr-1, reservedTable);
