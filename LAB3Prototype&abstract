@@ -1,0 +1,162 @@
+//Interfața Pizza
+public interface Pizza {
+    void cook(int quantity);
+}
+
+//Clasa GreekPizza
+public class GreekPizza implements Pizza {
+    @Override
+    public void cook(int quantity) {
+        System.out.println("S-a gatit pizza Greceasca\n" +
+                "Numarul de pizze - " + quantity);
+    }
+}
+
+//Clasa SicilianPizza:
+public class SicilianPizza implements Pizza {
+    @Override
+    public void cook(int quantity) {
+        System.out.println("S-a gatit pizza Siciliana\n" +
+                "Numarul de pizze - " + quantity);
+    }
+}
+
+
+//Interfața Stake:
+public interface Stake {
+    void cook(int quantity);
+}
+//Classa BeefStake:
+public class BeefStake implements Stake {
+    @Override
+    public void cook(int quantity) {
+        System.out.println("S-a gatit stake din carne de vita\n" +
+                "Numarul de stake-uri - " + quantity);
+    }
+}
+
+//Classa PorkStake: 
+public class PorkStake implements Stake {
+    @Override
+    public void cook(int quantity) {
+        System.out.println("S-a gatit stake din carne de porc\n" +
+                "Numarul de stake-uri - " + quantity);
+    }
+}
+
+Interfața OrderDishes (AbstractFactory):
+public interface OrderDishes {
+    Pizza cookPizza();
+    Stake cookStake();
+}
+
+//Clasa Order1 (concrete Factory):
+public class Order1 implements OrderDishes {
+
+    public Order1() {
+
+    }
+
+    @Override
+    public Pizza cookPizza() {
+        return new SicilianPizza();
+    }
+
+    @Override
+    public Stake cookStake() {
+        return new PorkStake();
+    }
+
+}
+
+//Clasa Order2 (concrete Factory):
+public class Order2 implements OrderDishes {
+    @Override
+    public Pizza cookPizza() {
+        return new GreekPizza();
+    }
+
+    @Override
+    public Stake cookStake() {
+        return new BeefStake();
+    }
+}
+
+//Clasa ClientOrderPrototype:
+public abstract class ClientOrderPrototype {
+
+    public ClientOrderPrototype() {
+    }
+
+    public abstract ClientOrderPrototype clone();
+}
+
+//Clasa ClientOrder:
+public class ClientOrder extends ClientOrderPrototype {
+    private final Pizza pizza;
+    public int pizzaPieces = 1;
+
+    private final Stake stake;
+    public int stakePieces = 1;
+
+    private final OrderDishes clientOrder;
+
+    ClientOrder(OrderDishes clientOrder){
+        this.pizza = clientOrder.cookPizza();
+        this.stake = clientOrder.cookStake();
+        this.clientOrder = clientOrder;
+    }
+
+
+    public void cook(){
+        this.pizza.cook(this.pizzaPieces);
+        this.stake.cook(this.stakePieces);
+    }
+
+    @Override
+    public ClientOrder clone() {
+        return new ClientOrder(clientOrder);
+    }
+}
+
+//Clasa Client:
+public static ClientOrder createOrder(){
+    Scanner input = new Scanner(System.in);
+
+    String pizzaSize;
+
+    ClientOrder order = null;
+    OrderDishes userOrder;
+    System.out.println("Asortiment 1 - Sicilian Pizza & Pork Stake;\n" +
+                        "Asortiment 2 - Greek Pizza & Beef Stake.");
+    System.out.println("Introduceti comanda dorita (1/2):");
+
+    int clientChoice = input.nextInt();
+    if(clientChoice == 1){
+        userOrder = new Order1();
+        order = new ClientOrder(userOrder);
+
+    }else if(clientChoice == 2){
+        userOrder = new Order2();
+        order = new ClientOrder(userOrder);
+    }else{
+        System.out.println("Ati introdus o optiune inexistenta");
+    }
+    return order;
+}
+public static void main(String[] args) {
+    Scanner answer = new Scanner(System.in);
+
+ ClientOrder order = createOrder();
+
+    System.out.println("\nREMARCA - In timpul pregatirii comenzii, clientul a decis sa mai adaoge la comanda facuta" +
+            " inca un stake si o pizza pentru inca o persoana in plus." +
+            " Respectiv, comanda initiala trebuie modificata.");
+
+    System.out.println("REMARCA - s-a facut o copie la comanda existenta si sa adaugat detaliile necesare.\n\nRezultat:");
+    ClientOrder modifiedOrder = order.clone();
+    modifiedOrder.pizzaPieces = 2;
+    modifiedOrder.stakePieces = 2;
+    modifiedOrder.cook();
+}
+
