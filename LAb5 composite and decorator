@@ -1,0 +1,212 @@
+//Clasa MenuProduct
+/** Role - Component   */
+public abstract class MenuProduct {
+    //This methods are more for Composites
+    public void add(MenuProduct menuProduct){
+        throw new UnsupportedOperationException("Cannot add item to Menu.");
+    }
+
+    public void remove(MenuProduct menuProduct){
+        throw new UnsupportedOperationException("Cannot remove item from Menu.");
+    }
+
+    public MenuProduct getProduct(int index){
+        throw new UnsupportedOperationException("Cannot get item from Menu.");
+    }
+
+    //This methods are more for Leaves
+    public String getName(){
+        throw new UnsupportedOperationException("Cannot return name.");
+    }
+
+    public double getPrice(){
+        throw new UnsupportedOperationException("Cannot return price.");
+    }
+
+    public void order(){
+        throw new UnsupportedOperationException("Cannot order this product.");
+    }
+}
+
+//Clasa Product
+/** Role - Leaf & ConcreteComponent */
+public class Product extends MenuProduct{
+    private String name;
+    private double price;
+
+    public Product(String name, double price){
+        this.name = name;
+        this.price = price;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public double getPrice() {
+        return this.price;
+    }
+
+    @Override
+    public void order() {
+        System.out.println("S-a comandat " + this.name + ", Prețul = " + this.price + " Lei");
+    }
+}
+
+//Clasa SubMenuProducts
+import java.util.ArrayList;
+
+/** Role - Composite*/
+public class SubMenuProducts extends MenuProduct{
+    private ArrayList<MenuProduct> products = new ArrayList<>();
+    private String name;
+
+    public SubMenuProducts(String name){
+        this.name = name;
+    }
+
+    @Override
+    public void add(MenuProduct menuProduct) {
+        products.add(menuProduct);
+    }
+
+    @Override
+    public void remove(MenuProduct menuProduct) {
+        products.remove(menuProduct);
+    }
+
+    @Override
+    public MenuProduct getProduct(int index) {
+       return products.get(index);
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public double getPrice() {
+        double subMenuTotalPrice = 0;
+        for (MenuProduct product : products) {
+            subMenuTotalPrice += product.getPrice();
+        }
+        return subMenuTotalPrice;
+    }
+
+    @Override
+    public void order() {
+        for (MenuProduct product : products) {
+            product.order();
+        }
+    }
+}
+
+//Clasa MenuProductDecorator
+/** Role - Decorator */
+public abstract class MenuProductDecorator extends MenuProduct{
+    public abstract String getName();
+}
+
+//Clasa ExtraTopping
+public class ExtraTopping extends MenuProductDecorator{
+    public MenuProduct menuProduct;
+    public String toppingName;
+    public double toppingPrice;
+
+    public ExtraTopping(MenuProduct menuProduct, String toppingName, double toppingPrice){
+        this.menuProduct = menuProduct;
+        this.toppingName = toppingName;
+        this.toppingPrice = toppingPrice;
+    }
+
+    @Override
+    public String getName() {
+        return this.menuProduct.getName() + ", " + this.toppingName;
+    }
+
+    @Override
+    public double getPrice() {
+        return this.menuProduct.getPrice() + this.toppingPrice;
+    }
+
+    @Override
+    public void order() {
+        System.out.println("S-a comandat " + this.menuProduct.getName() + ", " + this.toppingName + ", Prețul total = " + this.getPrice() + " Lei");
+    }
+}
+
+//Clasa Client:
+public class ClientOrder {
+    
+    public static void main(String[] args) {
+        /*Client makes an order from Main Menu without any products decorations*/
+        MenuProduct clientOrder = new SubMenuProducts("Client Order");
+        //adding the 5-th product from pizza subMenu
+        clientOrder.add(getMainMenu().getProduct(0).getProduct(5));
+        //adding the 4-th product from dessert subMenu
+        clientOrder.add(getMainMenu().getProduct(1).getProduct(4));
+        System.out.println("\n\nComanda 1 - fară adaosuri (nu s-a folosit Decorator):");
+        clientOrder.order();
+        System.out.println("Prețul total este de " + clientOrder.getPrice() + " Lei");
+
+        /*Client makes an order from Main Menu with some products decorations*/
+        MenuProduct decoratedClientOrder = getMainMenu().getProduct(0).getProduct(4);
+        decoratedClientOrder = new ExtraTopping(decoratedClientOrder, "extra Bacon", 10);
+        decoratedClientOrder = new ExtraTopping(decoratedClientOrder, "extra Olives", 10);
+        System.out.println("\n\nComanda 2 - cu adaosuri (s-a folosit Decorator):");
+        decoratedClientOrder.order();
+
+    }
+
+    public static MenuProduct getPizzaSubMenuMenu(){
+        /*Create a composite pizzaSubMenu and add different Pizza types to it*/
+        MenuProduct pizzaSubMenu = new SubMenuProducts("Pizza Menu");
+        MenuProduct pTonno = new Product("Pizza Tono", 95);
+        MenuProduct pSpring = new Product("Pizza spring", 80);
+        MenuProduct pPesto = new Product("Pizza pesto", 85);
+        MenuProduct pPotatoBacon = new Product("Pizza Potato & Bacon", 100);
+        MenuProduct pRancho = new Product("Pizza Rancho", 85);
+        MenuProduct pPepperoni = new Product("Pizza Pepperoni", 85);
+        MenuProduct pMargherita = new Product("Pizza Margherita", 75);
+        MenuProduct pDiablo = new Product("Pizza Diablo", 85);
+        pizzaSubMenu.add(pTonno);
+        pizzaSubMenu.add(pSpring);
+        pizzaSubMenu.add(pPesto);
+        pizzaSubMenu.add(pPotatoBacon);
+        pizzaSubMenu.add(pRancho);
+        pizzaSubMenu.add(pPepperoni);
+        pizzaSubMenu.add(pMargherita);
+        pizzaSubMenu.add(pDiablo);
+
+        return pizzaSubMenu;
+    }
+
+    public static MenuProduct getDessertSubMenu(){
+        /*Create a composite dessertSubMenu and add different desserts types to it*/
+        MenuProduct dessertSubMenu = new SubMenuProducts("Dessert Menu");
+        MenuProduct dFruiSalad = new Product("Desert Fruit Salad", 40);
+        MenuProduct dCaramelNutCake = new Product("Desert Caramel nut cake", 40);
+        MenuProduct dCheesecake = new Product("Desert Cheesecake", 40);
+        MenuProduct dTiramisu = new Product("Desert Tiramisu", 40);
+        MenuProduct dIcecream = new Product("Desert Icecream", 40);
+        dessertSubMenu.add(dFruiSalad);
+        dessertSubMenu.add(dCaramelNutCake);
+        dessertSubMenu.add(dCheesecake);
+        dessertSubMenu.add(dTiramisu);
+        dessertSubMenu.add(dIcecream);
+
+        return dessertSubMenu;
+    }
+
+    public static MenuProduct getMainMenu(){
+        /*Create a composite MainMenu and add both subMenus to it*/
+        MenuProduct mainMenu = new SubMenuProducts("Main Menu");
+        mainMenu.add(getPizzaSubMenuMenu());
+        mainMenu.add(getDessertSubMenu());
+
+        return mainMenu;
+    }
+}
