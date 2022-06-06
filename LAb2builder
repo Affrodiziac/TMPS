@@ -1,0 +1,336 @@
+Interfața Order
+public interface Order {
+    void setDishType(DishTypes type);
+    void setPiecesCount(int number);
+}
+
+Clasa PizzaBuilder
+public class PizzaBuilder implements Order {
+
+    private DishTypes dishType;
+    private PizzaTypes pizzaType;
+    private PizzaSize pizzaSize;
+    private Additions pizzaAddition;
+    private int pizzaCount;
+
+    @Override
+    public void setDishType(DishTypes type) {
+        this.dishType = type;
+    }
+
+    @Override
+    public void setPiecesCount(int number) {
+        this.pizzaCount = number;
+    }
+
+    public void setPizzaType(PizzaTypes type) {
+        this.pizzaType = type;
+public void setSize(PizzaSize size) {
+        this.pizzaSize = size;
+    }
+
+    public void setAdditions(Additions addition) {
+        this.pizzaAddition = addition;
+    }
+
+    public Pizza build(){
+        return new Pizza(dishType, pizzaType, pizzaSize, pizzaAddition, pizzaCount);
+    }
+}
+
+Clasa Pizza:
+public class Pizza {
+    private final DishTypes dishType;
+    private final PizzaTypes pizzaType;
+    private final PizzaSize pizzaSize;
+    private final Additions pizzaAddition;
+    private final int pizzaCount;
+
+    public Pizza(DishTypes foodType, PizzaTypes type, PizzaSize pizzaSize, Additions pizzaAddition, int number){
+        this.dishType = foodType;
+        this.pizzaType = type;
+        this.pizzaSize = pizzaSize;
+        this.pizzaAddition = pizzaAddition;
+        this.pizzaCount = number;
+    }
+
+    public DishTypes getDishType(){
+        return dishType;
+    }
+
+    public PizzaTypes getPizzaType(){
+        return pizzaType;
+    }
+
+    public PizzaSize getPizzaSize(){
+        return pizzaSize;
+    }
+
+    public Additions getPizzaAddition(){
+        return pizzaAddition;
+    }
+
+    public int getPizzaCount(){
+        return pizzaCount;
+    }
+}
+
+Clasa PartyPlatterBuilder:
+public class PartyPlatterBuilder implements Order {
+
+    private DishTypes dishType;
+    private PartyPlatterMenu platterType;
+    private int dishesCount;
+
+    @Override
+    public void setDishType(DishTypes type) {
+        this.dishType = type;
+    }
+
+    @Override
+    public void setPiecesCount(int number) {
+        this.dishesCount = number;
+    }
+
+    public void setPlatterType(PartyPlatterMenu type){
+        this.platterType = type;
+    }
+
+    public PartyPlatter build(){
+        return new PartyPlatter(dishType, platterType, dishesCount);
+    }
+}
+
+Classa PartyPlatter:
+public class PartyPlatter {
+    private final DishTypes dishType;
+    private final PartyPlatterMenu platterType;
+    private final int platterCount;
+
+    public PartyPlatter(DishTypes foodType, PartyPlatterMenu type, int number){
+        this.dishType = foodType;
+        this.platterType = type;
+        this.platterCount = number;
+    }
+
+    public DishTypes getDishType(){
+        return dishType;
+    }
+
+    public PartyPlatterMenu getPlatterType(){
+        return platterType;
+    }
+
+    public int getPlatterCount(){
+        return platterCount;
+    }
+
+}
+
+Classa Client: 
+public class Client {
+
+    public static void main(String[] args) {
+        Scanner input;
+        int dishesType;
+        String answer;
+
+        int n = 1;
+        int m = 1;
+        for (int i=0; i<n; i++){
+            System.out.println("\nCe tip de bucate doriți să comandați? (1 sau 2)");
+            System.out.println("1 - Pizza\n" +
+                    "2 - Platou de petrecere");
+            input = new Scanner(System.in);
+            dishesType = input.nextInt();
+
+            switch (dishesType){
+case 1:
+                    for(int j=0; j<m; j++){
+                        PizzaBuilder builder = new PizzaBuilder();
+                        OrderPizza(builder);
+                        Pizza pizza = builder.build();
+
+                        System.out.println("\nComanda dumneavoastră este:");
+                        if (pizza.getPizzaAddition() != null){
+                            System.out.println(pizza.getDishType() + "- " + pizza.getPizzaType() +
+                                    "\nMărimea - " + pizza.getPizzaSize() + "\nAdaos de - " + pizza.getPizzaAddition());
+
+                            System.out.println("\nDoriți să mai faceți o comandă? (da/nu)");
+                        }else{
+                            System.out.println(pizza.getDishType() + "- " + pizza.getPizzaType() +
+                                    "\nMărimea - " + pizza.getPizzaSize() + "\nFără adaosuri" + "\nNr de Pizze - " + pizza.getPizzaCount());
+
+                            System.out.println("\nDoriți să mai faceți o comandă din meniul dat? (da/nu)");
+                        }
+                        input = new Scanner(System.in);
+                        answer = input.nextLine();
+                        if (answer.equals("da")) j--;
+                    }
+                    break;
+                case 2:
+                    m = 1;
+                    for(int j=0; j<m; j++){
+                        PartyPlatterBuilder builder = new PartyPlatterBuilder();
+                        OrderPartyPlatter(builder);
+                        PartyPlatter platter = builder.build();
+
+                        System.out.println("\nComanda dumneavoastră este:");
+                        System.out.println(platter.getDishType() + "- " + platter.getPlatterType() +
+                                "\nNumărul de platouri - " + platter.getPlatterCount());
+
+                        System.out.println("\nDoriți să mai faceți o comandă din meniul dat? (da/nu)");
+                        input = new Scanner(System.in);
+                        answer = input.nextLine();
+                        if (answer.equals("da")){
+                            j--;
+                        }
+                    }
+                    break;
+                default: System.out.println("Eroare! Ați introdus un nr. diferit de cele din listă.");
+            }
+
+            System.out.println("\nDoriți să comandati și celalalt fel de bucate? (da/nu)");
+            input = new Scanner(System.in);
+            answer = input.nextLine();
+            if (answer.equals("da")) i--;
+        }
+
+    }
+public static void OrderPartyPlatter(PartyPlatterBuilder builder){
+        Scanner input = new Scanner(System.in);
+
+        //Se indica tipul de bucate:
+        builder.setDishType(DishTypes.PARTY_PLATTER);
+
+        //Se alege tipul platoului:
+        System.out.println("\nAlegeti tipul platoului din lista de mai jos! (1 - 7)");
+        System.out.println("1 - " + PartyPlatterMenu.Assorted_Meat);
+        System.out.println("2 - " + PartyPlatterMenu.Assorted_Sausages);
+        System.out.println("3 - " + PartyPlatterMenu.Assorted_Cheeses);
+        System.out.println("4 - " + PartyPlatterMenu.Vegetable_Mix);
+        System.out.println("5 - " + PartyPlatterMenu.Wings);
+        System.out.println("6 - " + PartyPlatterMenu.Rolls);
+        System.out.println("7 - " + PartyPlatterMenu.Fruit_Platter);
+        int platterType = input.nextInt();
+        switch (platterType){
+            case 1: builder.setPlatterType(PartyPlatterMenu.Assorted_Meat);
+                break;
+            case 2: builder.setPlatterType(PartyPlatterMenu.Assorted_Sausages);
+                break;
+            case 3: builder.setPlatterType(PartyPlatterMenu.Assorted_Cheeses);
+                break;
+            case 4: builder.setPlatterType(PartyPlatterMenu.Vegetable_Mix);
+                break;
+            case 5: builder.setPlatterType(PartyPlatterMenu.Wings);
+                break;
+            case 6: builder.setPlatterType(PartyPlatterMenu.Rolls);
+                break;
+            case 7: builder.setPlatterType(PartyPlatterMenu.Fruit_Platter);
+                break;
+            default: System.out.println("Eroare! Ați introdus un nr. diferit de cele din listă.");
+        }
+
+        //Se alege numarul de platouri
+        System.out.println("\nIndicați câte platouri de tipul dat doriți să comandați: ");
+        int platterCount = input.nextInt();
+        builder.setPiecesCount(platterCount);
+    }
+
+    public static void OrderPizza(PizzaBuilder builder){
+        Scanner input = new Scanner(System.in);
+        int pizzaType;
+        int pizzaSize;
+        int ingredient;
+        int pizzaCount;
+        String answer;
+
+        //Se indica tipul de bucate:
+        builder.setDishType(DishTypes.PIZZA);
+
+        //Se alege tipul de Pizza
+        System.out.println("\nAlegeti tipul de Pizza de mai jos! (1 - 10)");
+        System.out.println("1 - " + PizzaTypes.BARBEQUE);
+        System.out.println("2 - " + PizzaTypes.THAI_SHRIMP);
+        System.out.println("3 - " + PizzaTypes.RANCHO);
+        System.out.println("4 - " + PizzaTypes.PEPPERONI);
+        System.out.println("5 - " + PizzaTypes.MARGHERITA);
+        System.out.println("6 - " + PizzaTypes.DIABLO);
+        System.out.println("7 - " + PizzaTypes.PROSCIUTTO);
+        System.out.println("8 - " + PizzaTypes.MARIO);
+        System.out.println("9 - " + PizzaTypes.NEAPOLITANA);
+        System.out.println("10 - " + PizzaTypes.FOCACCIA);
+        pizzaType = input.nextInt();
+        switch (pizzaType){
+            case 1: builder.setPizzaType(PizzaTypes.BARBEQUE);
+                break;
+            case 2: builder.setPizzaType(PizzaTypes.THAI_SHRIMP);
+                break;
+            case 3: builder.setPizzaType(PizzaTypes.RANCHO);
+                break;
+            case 4: builder.setPizzaType(PizzaTypes.PEPPERONI);
+                break;
+            case 5: builder.setPizzaType(PizzaTypes.MARGHERITA);
+                break;
+            case 6: builder.setPizzaType(PizzaTypes.DIABLO);
+                break;
+            case 7: builder.setPizzaType(PizzaTypes.PROSCIUTTO);
+                break;
+            case 8: builder.setPizzaType(PizzaTypes.MARIO);
+                break;
+            case 9: builder.setPizzaType(PizzaTypes.NEAPOLITANA);
+                break;
+            case 10: builder.setPizzaType(PizzaTypes.FOCACCIA);
+                break;
+            default: System.out.println("Eroare! Ați introdus un nr. diferit de cele din listă.");
+        }
+
+        //Se indica marimea:
+        System.out.println("\nAlegeți mărimea la Pizza din lista de mai jos! (1 - 3)");
+        System.out.println("1 - " + PizzaSize.Small);
+        System.out.println("2 - " + PizzaSize.Medium);
+        System.out.println("3 - " + PizzaSize.Big);
+        pizzaSize = input.nextInt();
+        switch(pizzaSize) {
+            case 1: builder.setSize(PizzaSize.Small);
+                break;
+            case 2: builder.setSize(PizzaSize.Medium);
+                break;
+            case 3: builder.setSize(PizzaSize.Big);
+                break;
+            default: System.out.println("Eroare! Ați introdus un nr. diferit de cele din listă.");
+        }
+
+        //Se aleg adaosurile la Pizza
+        System.out.println("\nDoriți să alegeți adaosuri! (da/nu)");
+        input = new Scanner(System.in);
+        answer = input.nextLine();
+        if (answer.equals("da")){
+            System.out.println("Alegeți ingrediente adiționale din lista urmatoare! (1 - 5)");
+            System.out.println("1 - " + Additions.CHEESE);
+            System.out.println("2 - " + Additions.PEPPERONI);
+            System.out.println("3 - " + Additions.OLIVE);
+            System.out.println("4 - " + Additions.TOMATOES);
+            System.out.println("5 - " + Additions.ARUGULA);
+            ingredient = input.nextInt();
+            switch(ingredient) {
+                case 1: builder.setAdditions(Additions.CHEESE);
+                    break;
+                case 2: builder.setAdditions(Additions.PEPPERONI);
+                    break;
+                case 3: builder.setAdditions(Additions.OLIVE);
+                    break;
+                case 4: builder.setAdditions(Additions.TOMATOES);
+                    break;
+                case 5: builder.setAdditions(Additions.ARUGULA);
+                    break;
+                default: System.out.println("Eroare! Ați introdus un nr. diferit de cele din listă.");
+            }
+        }
+
+        //Se indica nr de portii
+        System.out.println("\nIndicați câte Pizze doriti să comandați: ");
+        pizzaCount = input.nextInt();
+        builder.setPiecesCount(pizzaCount);
+    }
+}
